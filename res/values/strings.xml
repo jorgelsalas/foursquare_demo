@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">SalsaMobi Demo</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="venue_row_name_label">"Venue: "</string>
+    <string name="distance_row_label">"Distance(KM): "</string>
+    <string name="city_text_hint">Enter a city name. Eg: Chicago,IL</string>
+    <string name="search_button_text">Search!</string>
+    <string name="empty_search_text_warning">Please enter a city name in the specified format and try again</string>
+    <string name="internet_not_available_warning">Internet not available. Fetching results from last search.</string>
+    <string name="no_venues_retrieved_from_local_warning">No venues available from last search.</string>
+    <string name="no_venues_retrieved_from_web_warning">Foursquare could not find any matches for this city. Please review the city name you provided and try again.</string>
+    <string name="verify_gps_and_network_warning">Please make sure your GPS is enabled and you have network access before trying again</string>
+    <string name="location_not_acquired_warning">Could not acquire your location from the device.</string>
+    <string name="foursquare_error_warning">Something went wrong while querying Foursquare. Please try a different city name.</string>
+    <string name="geocode_error_warning">Foursquare did not recognize the city name specified. Please try a different one.</string>
+    <string name="connected_to_google_services">Connection to Google location services acquired</string>
+    <string name="connection_to_google_services_suspended">Connection to Google location services suspended</string>
+    <string name="connection_to_google_services_failed">Connection to Google location services failed</string>
+    
+
+</resources>
