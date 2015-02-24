@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -60,10 +61,13 @@ public class VenueAdapter extends BaseAdapter implements ListAdapter{
             LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             venue_row = (LinearLayout) inflater.inflate(R.layout.venue_list_row, parent, false);
         }
+        Typeface typeface = Typeface.createFromAsset(activity.getAssets(), "fonts/PTS76F.ttf");
         TextView temp = (TextView)venue_row.findViewById(R.id.venue_name_textView);
         temp.setText(activity.getString(R.string.venue_row_name_label) + venue.getName());
+        temp.setTypeface(typeface);
         temp = (TextView)venue_row.findViewById(R.id.distance_textView);
         temp.setText(activity.getString(R.string.distance_row_label) + venue.getDistanceToLocation());
+        temp.setTypeface(typeface);
         
         venue_row.setOnClickListener(new OnClickListener() {
 			@Override
