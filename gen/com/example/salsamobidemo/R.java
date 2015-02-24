@@ -1942,6 +1942,7 @@ containing a value of this type.
          */
         public static final int abc_text_size_title_material_toolbar=0x7f0c0012;
         /**  Default screen margins, per the Android Design guidelines. 
+ Default screen margins, per the Android Design guidelines. 
 
          Example customization of dimensions originally defined in res/values/dimens.xml
          (such as screen margins) for screens with more than 820dp of available width. This
@@ -1949,6 +1950,7 @@ containing a value of this type.
     
          */
         public static final int activity_horizontal_margin=0x7f0c002b;
+        public static final int activity_reduced_vertical_margin=0x7f0c002d;
         public static final int activity_vertical_margin=0x7f0c002c;
         /**  The platform's desired fixed height for a dialog along the major axis
          (the screen is in portrait). This may be either a fraction or a dimension.
@@ -1984,6 +1986,7 @@ containing a value of this type.
         public static final int dialog_fixed_width_minor=0x7f0c000d;
         public static final int disabled_alpha_material_dark=0x7f0c0001;
         public static final int disabled_alpha_material_light=0x7f0c0000;
+        public static final int distance_text_horizontal_padding=0x7f0c002e;
     }
     public static final class drawable {
         public static final int abc_ab_share_pack_holo_dark=0x7f020000;
@@ -2085,7 +2088,7 @@ containing a value of this type.
         public static final int action_mode_bar=0x7f080042;
         public static final int action_mode_bar_stub=0x7f080041;
         public static final int action_mode_close_button=0x7f080034;
-        public static final int action_settings=0x7f080059;
+        public static final int action_settings=0x7f08005a;
         public static final int activity_chooser_view_content=0x7f080035;
         public static final int adjust_height=0x7f080002;
         public static final int adjust_width=0x7f080001;
@@ -2103,7 +2106,7 @@ containing a value of this type.
         public static final int default_activity_button=0x7f080038;
         public static final int dialog=0x7f080024;
         public static final int disableHome=0x7f08001e;
-        public static final int distance_textView=0x7f080058;
+        public static final int distance_textView=0x7f080059;
         public static final int donate_with_google=0x7f080013;
         public static final int dropdown=0x7f080025;
         public static final int edit_query=0x7f080047;
@@ -2121,13 +2124,14 @@ containing a value of this type.
         public static final int image=0x7f080037;
         public static final int listMode=0x7f080017;
         public static final int list_item=0x7f080039;
-        public static final int map=0x7f080054;
+        public static final int map=0x7f080055;
         public static final int match_parent=0x7f08000e;
         public static final int middle=0x7f080027;
         public static final int monochrome=0x7f080016;
         public static final int never=0x7f08001f;
         public static final int none=0x7f080000;
         public static final int normal=0x7f080003;
+        public static final int pager=0x7f080054;
         public static final int production=0x7f080009;
         public static final int progress_circular=0x7f080030;
         public static final int progress_horizontal=0x7f080031;
@@ -2157,9 +2161,9 @@ containing a value of this type.
         public static final int title=0x7f08003b;
         public static final int up=0x7f08002a;
         public static final int useLogo=0x7f080019;
-        public static final int venue_list=0x7f080056;
-        public static final int venue_list_fragment=0x7f080055;
-        public static final int venue_name_textView=0x7f080057;
+        public static final int venue_list=0x7f080057;
+        public static final int venue_list_fragment=0x7f080056;
+        public static final int venue_name_textView=0x7f080058;
         public static final int withText=0x7f080022;
         public static final int wrap_content=0x7f08000f;
     }
@@ -2214,10 +2218,11 @@ containing a value of this type.
         public static final int abc_search_view=0x7f030015;
         public static final int abc_simple_dropdown_hint=0x7f030016;
         public static final int activity_home=0x7f030017;
-        public static final int activity_home2=0x7f030018;
-        public static final int support_simple_spinner_dropdown_item=0x7f030019;
-        public static final int venue_list=0x7f03001a;
-        public static final int venue_list_row=0x7f03001b;
+        public static final int separate_listview_=0x7f030018;
+        public static final int separate_map_fragment=0x7f030019;
+        public static final int support_simple_spinner_dropdown_item=0x7f03001a;
+        public static final int venue_list=0x7f03001b;
+        public static final int venue_list_row=0x7f03001c;
     }
     public static final class menu {
         public static final int home=0x7f0d0000;
@@ -2397,12 +2402,16 @@ containing a value of this type.
         public static final int geocode_error_warning=0x7f070041;
         public static final int hello_world=0x7f070034;
         public static final int internet_not_available_warning=0x7f07003b;
+        public static final int location_currently_unavailable_warning=0x7f070048;
         public static final int location_not_acquired_warning=0x7f07003f;
+        public static final int map_not_available_warning=0x7f070047;
         public static final int no_venues_retrieved_from_local_warning=0x7f07003c;
         public static final int no_venues_retrieved_from_web_warning=0x7f07003d;
         public static final int search_button_text=0x7f070039;
         public static final int store_picture_message=0x7f070001;
         public static final int store_picture_title=0x7f070000;
+        public static final int venue_list_tab_title=0x7f070045;
+        public static final int venue_map_tab_title=0x7f070046;
         public static final int venue_row_name_label=0x7f070036;
         public static final int verify_gps_and_network_warning=0x7f07003e;
         /**  Text on a placeholder buy button when Google Play services is not

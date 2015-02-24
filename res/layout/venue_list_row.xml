@@ -14,7 +14,11 @@
         android:id="@+id/distance_textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
+        android:gravity="end"
+        android:paddingEnd="@dimen/distance_text_horizontal_padding"
+        android:paddingStart="@dimen/distance_text_horizontal_padding"
+        android:paddingRight="@dimen/distance_text_horizontal_padding"
+        android:paddingLeft="@dimen/distance_text_horizontal_padding"
         android:text="@string/distance_row_label" />
 
 </LinearLayout>

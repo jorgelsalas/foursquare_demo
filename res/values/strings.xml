@@ -19,6 +19,10 @@
     <string name="connected_to_google_services">Connection to Google location services acquired</string>
     <string name="connection_to_google_services_suspended">Connection to Google location services suspended</string>
     <string name="connection_to_google_services_failed">Connection to Google location services failed</string>
+    <string name="venue_list_tab_title">Venue List</string>
+    <string name="venue_map_tab_title">Venue Map</string>
+    <string name="map_not_available_warning">Map not available</string>
+    <string name="location_currently_unavailable_warning">Location currently unavailable</string>
     
 
 </resources>

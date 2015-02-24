@@ -22,20 +22,18 @@ public class VenueListFragment extends Fragment {
 	private VenueAdapter venueAdapter;
 
 	public VenueListFragment() {
-		// TODO Auto-generated constructor stub
+		
 	}
 	
 	@Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-        Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.venue_list, container, false);
 		venueList = (ListView) v;
 		venueAdapter = new VenueAdapter(getActivity());
 		venueList.setAdapter(venueAdapter);
-        return v;
+		return v;
     }
-	
+
 	public void populateListView(ArrayList<FourSquareVenue> venues){
 		venueAdapter.newData(venues);
 	}

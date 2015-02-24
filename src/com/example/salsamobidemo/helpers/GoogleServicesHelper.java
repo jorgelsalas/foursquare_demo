@@ -31,7 +31,7 @@ public class GoogleServicesHelper {
 	        .addOnConnectionFailedListener((OnConnectionFailedListener) activity)
 	        .addApi(LocationServices.API)
 	        .build();
-	    mGoogleApiClient.connect();
+	    connect();
 	}
 	
 	public Location getLastLocation(){
@@ -44,6 +44,18 @@ public class GoogleServicesHelper {
 	
 	public boolean isConnectionAvailable(){
 		return mGoogleApiClient.isConnected();
+	}
+	
+	public void Disconnect(){
+		if (mGoogleApiClient.isConnected()){
+			mGoogleApiClient.disconnect();
+		}
+	}
+	
+	public void connect(){
+		if (!mGoogleApiClient.isConnected()){
+			mGoogleApiClient.connect();
+		}
 	}
 
 }
