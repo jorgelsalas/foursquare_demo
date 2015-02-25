@@ -18,7 +18,7 @@ public class TabsAdapter extends FragmentPagerAdapter {
 	public static final int MAP_FRAGMENT_ID = 1;
 	private OnViewPagerFragmentUpdated mCallback;
 	
-	private SparseArray<Fragment> storedFragments = new SparseArray<Fragment>();
+	private static SparseArray<Fragment> storedFragments = new SparseArray<Fragment>();
 	
 	public TabsAdapter(FragmentManager fm, Activity activity) {
 		super(fm);
@@ -30,16 +30,29 @@ public class TabsAdapter extends FragmentPagerAdapter {
 		switch (index) {
         case VENUE_LIST_FRAGMENT_ID:
             // List of venues
-        	VenueListFragment venues = new VenueListFragment();
-        	storedFragments.put(index, venues);
+        	VenueListFragment venues = (VenueListFragment) getFragmentReference(index);
+        	if (venues == null){
+        		venues = new VenueListFragment();
+        		storedFragments.put(index, venues);
+        	}
         	mCallback.onNewVenuesFragment((VenueListFragment) getFragmentReference(index));
-            return venues;
+            return getFragmentReference(index);
         case MAP_FRAGMENT_ID:
             // Map fragment
+        	SupportMapFragment map = (SupportMapFragment) getFragmentReference(index);
+        	if(map == null){
+        		map = new SupportMapFragment();
+        		storedFragments.put(index, map);
+        	}
+        	mCallback.onNewMapFragment((SupportMapFragment) getFragmentReference(index));
+        	
+        	/* Old method
         	SupportMapFragment map = new SupportMapFragment();
         	storedFragments.put(index, map);
         	mCallback.onNewMapFragment((SupportMapFragment) getFragmentReference(index));
-            return map;
+        	*/
+        	
+            return getFragmentReference(index);
         }
 		return null;
 	}

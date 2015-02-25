@@ -1,5 +1,6 @@
 package com.example.salsamobidemo.activities;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import android.annotation.TargetApi;
@@ -47,8 +48,11 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 
+@SuppressWarnings("deprecation")
 public class Home extends ActionBarActivity implements OnVenueClickListener, OnVenueDataFetchCompleted, 
 						ConnectionCallbacks ,OnConnectionFailedListener, OnMapReadyCallback, TabListener, 
 						OnViewPagerFragmentUpdated {
@@ -65,8 +69,10 @@ public class Home extends ActionBarActivity implements OnVenueClickListener, OnV
 	private ViewPager viewPager = null;
     private TabsAdapter mAdapter = null;
     private ActionBar actionBar = null;
+    private ArrayList<FourSquareVenue> mVenues = null;
+    private static final String VENUES_BUNDLE_KEY = "venues_key";
 
-    @Override
+	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
@@ -75,14 +81,16 @@ public class Home extends ActionBarActivity implements OnVenueClickListener, OnV
         FragmentManager fragmentManager = getSupportFragmentManager();
         venueFragment = (VenueListFragment) fragmentManager.findFragmentById(R.id.venue_list_fragment);
         mapFragment = (SupportMapFragment) fragmentManager.findFragmentById(R.id.map);
-        ///*
+        ///* ViewPager Handling
         viewPager = (ViewPager) findViewById(R.id.pager);
         actionBar = getSupportActionBar();
         mAdapter = new TabsAdapter(fragmentManager, this);
         if ((viewPager != null) && (mAdapter != null)){
+        	//This code will only execute on phones (ie: devices not considered as having a large display)
         	viewPager.setAdapter(mAdapter);
         	actionBar.setHomeButtonEnabled(false);
             actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+            actionBar.setDisplayShowTitleEnabled(false);
             actionBar.addTab(actionBar.newTab().setText(R.string.venue_list_tab_title).setTabListener(this));
             actionBar.addTab(actionBar.newTab().setText(R.string.venue_map_tab_title).setTabListener(this));
             setPageChangeListener();
@@ -96,27 +104,13 @@ public class Home extends ActionBarActivity implements OnVenueClickListener, OnV
         	//Only hide it in tablets, which won't have a viewPager
         	hideActionBar();
         }
-        //*/
+        //End ViewPager Handling*/
         
         if (mapFragment != null){
         	mapFragment.getMapAsync(this);
         }
         googleServicesHelper = new GoogleServicesHelper(this);
         locationManagerHelper = new LocationManagerHelper(this);
-        
-        /*
-        //InternetHelper.verifyInternetAccess(this);
-        //new VenueSearchTask("Chicago,IL", 40.7,-74, this).execute("");
-        //new LoadVenuesFromDatabaseTask(this).execute("");
-        lastLocation = locationManagerHelper.getLastKnownLocation();
-        if (lastLocation == null){
-        	Toast.makeText(this, "Loc manager gave null location", Toast.LENGTH_LONG).show();
-        }
-        else {
-        	//Toast.makeText(this, "Location: lat :" + lastLocation.getLatitude() + " long: " + lastLocation.getLongitude(), Toast.LENGTH_LONG).show();
-        	new VenueSearchTask("Chicago,ILL", lastLocation.getLatitude(),lastLocation.getLongitude(), this).execute("");
-        }
-        //*/
     }
     
     //Hide the ActionBar, if the API is available.
@@ -191,6 +185,8 @@ public class Home extends ActionBarActivity implements OnVenueClickListener, OnV
 		bindData(venues);
 		new UpdateDatabaseTask(this, venues).execute("");
 		addVenuesToMap(venues);
+		// Update local venues to keep on orientation change
+		mVenues = venues;
 	}
 
 
@@ -202,6 +198,8 @@ public class Home extends ActionBarActivity implements OnVenueClickListener, OnV
 			//Notify user that local DB had no venues stored
 			Toast.makeText(this, R.string.no_venues_retrieved_from_local_warning, Toast.LENGTH_LONG).show();
 		}
+		// Update local venues to keep on orientation change
+		mVenues = venues;
 	}
 	
 	//First checks to verify if map is available, then adds markers
@@ -252,6 +250,9 @@ public class Home extends ActionBarActivity implements OnVenueClickListener, OnV
 	@Override
 	public void onMapReady(GoogleMap googleMap) {
 		map = googleMap;
+		if (mVenues != null){
+			addVenuesToMap(mVenues);
+		}
 	}
 	
 	public void mapUIComponents(){
@@ -398,7 +399,34 @@ public class Home extends ActionBarActivity implements OnVenueClickListener, OnV
 		googleServicesHelper.connect();
 	}
 
-	
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		//Use gson to save venues
+		
+		super.onSaveInstanceState(outState);
+		if (mVenues != null){
+			String json = new Gson().toJson(mVenues);
+			outState.putString(VENUES_BUNDLE_KEY, (json));
+		}
+	}
+
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		//Use gson to retrieve venues
+		if (savedInstanceState != null){
+			String json = savedInstanceState.getString(VENUES_BUNDLE_KEY);
+			Type arrayListOfVenues = new TypeToken<ArrayList<FourSquareVenue>>(){}.getType();
+			mVenues = new Gson().fromJson(json, arrayListOfVenues);
+			
+			
+			if (mVenues != null) {
+				// Apply UI changes to recover state
+				bindData(mVenues);
+				addVenuesToMap(mVenues);
+			}
+		}
+	}
 	
 	
 }

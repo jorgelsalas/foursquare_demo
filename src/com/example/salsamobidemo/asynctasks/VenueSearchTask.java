@@ -10,14 +10,14 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.salsamobidemo.entities.FourSquareVenue;
-import com.example.salsamobidemo.http.HttpHelper;
+import com.example.salsamobidemo.http.HttpClient;
 import com.example.salsamobidemo.interfaces.OnVenueDataFetchCompleted;
 
 public class VenueSearchTask extends AsyncTask <String, Integer, String>{
 	
 	private ArrayList<FourSquareVenue> venues = new ArrayList<FourSquareVenue>();
 	private JSONObject jo = null;
-	private HttpHelper httpHelper;
+	private HttpClient httpHelper;
 	private boolean isNull = false;
 	private boolean isEmpty = false;
 	private boolean hasGeocodeError = false;
@@ -25,7 +25,7 @@ public class VenueSearchTask extends AsyncTask <String, Integer, String>{
 	private static final String LOG_TAG = VenueSearchTask.class.getSimpleName();
 	
 	public VenueSearchTask(String city, double latitude, double longitude, Activity activity)  {
-		httpHelper = new HttpHelper(city, latitude, longitude);
+		httpHelper = new HttpClient(city, latitude, longitude);
 		setCallback(activity);
 	}
 
@@ -67,7 +67,11 @@ public class VenueSearchTask extends AsyncTask <String, Integer, String>{
                     	venue.setDistanceToLocation(distanceInKM);
                     	venues.add(venue);
                 }
+				if (venues.size() == 0){
+	    			isEmpty = true;
+	    		}
     		}
+    		
     	}
     	catch (Exception e){
     		Log.e(LOG_TAG, "Error while retrieving Foursquare data: "+e.toString(), e);

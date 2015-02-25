@@ -23,6 +23,7 @@ public class VenueAdapter extends BaseAdapter implements ListAdapter{
 	private Activity activity;
 	private ArrayList<FourSquareVenue> venues = new ArrayList<FourSquareVenue>();
 	private OnVenueClickListener mCallback;
+	public static final String FONT_REFERENCE = "fonts/PTS76F.ttf";
 
 	public VenueAdapter() {
 		
@@ -61,7 +62,7 @@ public class VenueAdapter extends BaseAdapter implements ListAdapter{
             LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             venue_row = (LinearLayout) inflater.inflate(R.layout.venue_list_row, parent, false);
         }
-        Typeface typeface = Typeface.createFromAsset(activity.getAssets(), "fonts/PTS76F.ttf");
+        Typeface typeface = Typeface.createFromAsset(activity.getAssets(), FONT_REFERENCE);
         TextView temp = (TextView)venue_row.findViewById(R.id.venue_name_textView);
         temp.setText(activity.getString(R.string.venue_row_name_label) + venue.getName());
         temp.setTypeface(typeface);
@@ -84,6 +85,10 @@ public class VenueAdapter extends BaseAdapter implements ListAdapter{
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() + " must implement " + OnVenueClickListener.class.getName());
         }
+	}
+	
+	public ArrayList<FourSquareVenue> getItems(){
+		return this.venues;
 	}
 
 }

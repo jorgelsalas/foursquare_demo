@@ -67,7 +67,7 @@ public class DBManager {
 			venue.setDistanceToLocation(c.getDouble(4));
 			venues.add(venue);
 		}
-		
+		close();
 		return venues;
 	}
 	
@@ -82,6 +82,7 @@ public class DBManager {
 			mDB.insert(DBConstants.VENUE_TABLE_NAME, null, values);
 			values.clear();
 		}
+		close();
 	}
 
 }

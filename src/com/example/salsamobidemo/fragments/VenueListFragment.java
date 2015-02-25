@@ -37,5 +37,8 @@ public class VenueListFragment extends Fragment {
 	public void populateListView(ArrayList<FourSquareVenue> venues){
 		venueAdapter.newData(venues);
 	}
-
+	
+	public VenueAdapter getAdapter(){
+		return venueAdapter;
+	}
 }
