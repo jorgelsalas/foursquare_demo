@@ -1,11 +1,9 @@
 package com.example.salsamobidemo.activities;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.pm.ActivityInfo;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -36,9 +34,9 @@ import com.example.salsamobidemo.fragments.VenueListFragment;
 import com.example.salsamobidemo.helpers.GoogleServicesHelper;
 import com.example.salsamobidemo.helpers.InternetHelper;
 import com.example.salsamobidemo.helpers.LocationManagerHelper;
+import com.example.salsamobidemo.interfaces.OnRestoreStateListener;
 import com.example.salsamobidemo.interfaces.OnVenueClickListener;
 import com.example.salsamobidemo.interfaces.OnVenueDataFetchCompleted;
-import com.example.salsamobidemo.interfaces.OnViewPagerFragmentUpdated;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
@@ -48,14 +46,12 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 
 @SuppressWarnings("deprecation")
 public class Home extends ActionBarActivity implements OnVenueClickListener, OnVenueDataFetchCompleted, 
-						ConnectionCallbacks ,OnConnectionFailedListener, OnMapReadyCallback, TabListener, 
-						OnViewPagerFragmentUpdated {
+						ConnectionCallbacks ,OnConnectionFailedListener, OnMapReadyCallback, TabListener,
+						OnRestoreStateListener {
 	
 	private final String LOG_TAG = "Home Activity";
 	private GoogleServicesHelper googleServicesHelper;
@@ -69,8 +65,7 @@ public class Home extends ActionBarActivity implements OnVenueClickListener, OnV
 	private ViewPager viewPager = null;
     private TabsAdapter mAdapter = null;
     private ActionBar actionBar = null;
-    private ArrayList<FourSquareVenue> mVenues = null;
-    private static final String VENUES_BUNDLE_KEY = "venues_key";
+    private FragmentManager fragmentManager;
 
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,13 +73,13 @@ public class Home extends ActionBarActivity implements OnVenueClickListener, OnV
         setContentView(R.layout.activity_home);
         mapUIComponents();
         setListeners();
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager = getSupportFragmentManager();
         venueFragment = (VenueListFragment) fragmentManager.findFragmentById(R.id.venue_list_fragment);
         mapFragment = (SupportMapFragment) fragmentManager.findFragmentById(R.id.map);
         ///* ViewPager Handling
         viewPager = (ViewPager) findViewById(R.id.pager);
         actionBar = getSupportActionBar();
-        mAdapter = new TabsAdapter(fragmentManager, this);
+        mAdapter = new TabsAdapter(fragmentManager);
         if ((viewPager != null) && (mAdapter != null)){
         	//This code will only execute on phones (ie: devices not considered as having a large display)
         	viewPager.setAdapter(mAdapter);
@@ -94,11 +89,12 @@ public class Home extends ActionBarActivity implements OnVenueClickListener, OnV
             actionBar.addTab(actionBar.newTab().setText(R.string.venue_list_tab_title).setTabListener(this));
             actionBar.addTab(actionBar.newTab().setText(R.string.venue_map_tab_title).setTabListener(this));
             setPageChangeListener();
-            venueFragment = (VenueListFragment) ((TabsAdapter) viewPager.getAdapter()).getFragmentReference(TabsAdapter.VENUE_LIST_FRAGMENT_ID);
-            mapFragment = (SupportMapFragment) ((TabsAdapter) viewPager.getAdapter()).getFragmentReference(TabsAdapter.MAP_FRAGMENT_ID);
+            //TODO Cambiar estos dos por nuevo metodo que usa el helper
+            venueFragment = (VenueListFragment) fragmentManager.findFragmentByTag(getFragmentTag(viewPager.getId(), TabsAdapter.VENUE_LIST_FRAGMENT_ID ));
+            mapFragment = (SupportMapFragment) fragmentManager.findFragmentByTag(getFragmentTag(viewPager.getId(), TabsAdapter.MAP_FRAGMENT_ID ));
             
             //Phones will only work in portrait mode
-        	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        	//setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
         if (viewPager == null) {
         	//Only hide it in tablets, which won't have a viewPager
@@ -141,11 +137,31 @@ public class Home extends ActionBarActivity implements OnVenueClickListener, OnV
         return super.onOptionsItemSelected(item);
     }
     
+    
+    @Override
+	public void onDataReceived(ArrayList<FourSquareVenue> venues) {
+		bindData(venues);
+		new UpdateDatabaseTask(this, venues).execute("");
+		addVenuesToMap(venues);
+	}
+
+
+	@Override
+	public void onDataReceivedFromLocalDB(ArrayList<FourSquareVenue> venues) {
+		bindData(venues);
+		addVenuesToMap(venues);
+		if(venues.size() == 0){
+			//Notify user that local DB had no venues stored
+			Toast.makeText(this, R.string.no_venues_retrieved_from_local_warning, Toast.LENGTH_LONG).show();
+		}
+	}
+    
     //TODO: Update to handle viewPager
     public void bindData(ArrayList<FourSquareVenue> venues){
     	//ViewPager handling
     	if (venueFragment == null && viewPager != null){
-    		venueFragment = (VenueListFragment) ((TabsAdapter) viewPager.getAdapter()).getFragmentReference(TabsAdapter.VENUE_LIST_FRAGMENT_ID);
+    		//venueFragment = (VenueListFragment) ((TabsAdapter) viewPager.getAdapter()).getFragmentReference(TabsAdapter.VENUE_LIST_FRAGMENT_ID);
+    		venueFragment = (VenueListFragment) fragmentManager.findFragmentByTag(getFragmentTag(viewPager.getId(), TabsAdapter.VENUE_LIST_FRAGMENT_ID ));
     	}
     	//END viewPager handling
     	if (venueFragment != null){
@@ -161,7 +177,7 @@ public class Home extends ActionBarActivity implements OnVenueClickListener, OnV
 	public void onVenueClicked(FourSquareVenue venue) {
 		//ViewPager handling
     	if (mapFragment == null && viewPager != null){
-    		mapFragment = (SupportMapFragment) ((TabsAdapter) viewPager.getAdapter()).getFragmentReference(TabsAdapter.MAP_FRAGMENT_ID);
+    		mapFragment = (SupportMapFragment) fragmentManager.findFragmentByTag(getFragmentTag(viewPager.getId(), TabsAdapter.MAP_FRAGMENT_ID ));
     		map = mapFragment.getMap();
     	}
     	//END viewPager handling
@@ -178,36 +194,13 @@ public class Home extends ActionBarActivity implements OnVenueClickListener, OnV
 			Log.e(LOG_TAG, getString(R.string.map_not_available_warning));
 		}
 	}
-
-
-	@Override
-	public void onDataReceived(ArrayList<FourSquareVenue> venues) {
-		bindData(venues);
-		new UpdateDatabaseTask(this, venues).execute("");
-		addVenuesToMap(venues);
-		// Update local venues to keep on orientation change
-		mVenues = venues;
-	}
-
-
-	@Override
-	public void onDataReceivedFromLocalDB(ArrayList<FourSquareVenue> venues) {
-		bindData(venues);
-		addVenuesToMap(venues);
-		if(venues.size() == 0){
-			//Notify user that local DB had no venues stored
-			Toast.makeText(this, R.string.no_venues_retrieved_from_local_warning, Toast.LENGTH_LONG).show();
-		}
-		// Update local venues to keep on orientation change
-		mVenues = venues;
-	}
 	
 	//First checks to verify if map is available, then adds markers
 	//TODO: Update to handle viewPager
 	public void addVenuesToMap(ArrayList<FourSquareVenue> venues){
 		//ViewPager handling
     	if (map == null && viewPager != null){
-    		mapFragment = (SupportMapFragment) ((TabsAdapter) viewPager.getAdapter()).getFragmentReference(TabsAdapter.MAP_FRAGMENT_ID);
+    		mapFragment = (SupportMapFragment) fragmentManager.findFragmentByTag(getFragmentTag(viewPager.getId(), TabsAdapter.MAP_FRAGMENT_ID ));
     		if (mapFragment != null){
     			map = mapFragment.getMap();
     		}
@@ -250,9 +243,6 @@ public class Home extends ActionBarActivity implements OnVenueClickListener, OnV
 	@Override
 	public void onMapReady(GoogleMap googleMap) {
 		map = googleMap;
-		if (mVenues != null){
-			addVenuesToMap(mVenues);
-		}
 	}
 	
 	public void mapUIComponents(){
@@ -364,19 +354,6 @@ public class Home extends ActionBarActivity implements OnVenueClickListener, OnV
 	}
 
 	@Override
-	public void onNewVenuesFragment(VenueListFragment venueListFragment) {
-		this.venueFragment = venueListFragment;
-	}
-
-	@Override
-	public void onNewMapFragment(SupportMapFragment mapFragment) {
-		this.mapFragment = mapFragment;
-		if (this.mapFragment != null){
-			this.mapFragment.getMapAsync(this);
-		}
-	}
-
-	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 		googleServicesHelper.Disconnect();
@@ -399,34 +376,13 @@ public class Home extends ActionBarActivity implements OnVenueClickListener, OnV
 		googleServicesHelper.connect();
 	}
 
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		//Use gson to save venues
-		
-		super.onSaveInstanceState(outState);
-		if (mVenues != null){
-			String json = new Gson().toJson(mVenues);
-			outState.putString(VENUES_BUNDLE_KEY, (json));
-		}
+	private String getFragmentTag(int viewPagerId, int fragmentPosition) {
+	     return "android:switcher:" + viewPagerId + ":" + fragmentPosition;
 	}
 
 	@Override
-	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		super.onRestoreInstanceState(savedInstanceState);
-		//Use gson to retrieve venues
-		if (savedInstanceState != null){
-			String json = savedInstanceState.getString(VENUES_BUNDLE_KEY);
-			Type arrayListOfVenues = new TypeToken<ArrayList<FourSquareVenue>>(){}.getType();
-			mVenues = new Gson().fromJson(json, arrayListOfVenues);
-			
-			
-			if (mVenues != null) {
-				// Apply UI changes to recover state
-				bindData(mVenues);
-				addVenuesToMap(mVenues);
-			}
-		}
+	public void onListViewRestored(ArrayList<FourSquareVenue> venues) {
+		addVenuesToMap(venues);
 	}
-	
 	
 }
