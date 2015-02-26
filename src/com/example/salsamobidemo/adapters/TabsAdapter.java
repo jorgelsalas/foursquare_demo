@@ -4,8 +4,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.example.salsamobidemo.fragments.CustomMapFragment;
 import com.example.salsamobidemo.fragments.VenueListFragment;
-import com.google.android.gms.maps.SupportMapFragment;
 
 public class TabsAdapter extends FragmentPagerAdapter {
 	
@@ -25,7 +25,7 @@ public class TabsAdapter extends FragmentPagerAdapter {
             return new VenueListFragment();
         case MAP_FRAGMENT_ID:
             // Map fragment
-            return new SupportMapFragment();
+            return new CustomMapFragment();
         }
 		return null;
 	}

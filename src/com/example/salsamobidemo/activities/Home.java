@@ -30,6 +30,8 @@ import com.example.salsamobidemo.asynctasks.LoadVenuesFromDatabaseTask;
 import com.example.salsamobidemo.asynctasks.UpdateDatabaseTask;
 import com.example.salsamobidemo.asynctasks.VenueSearchTask;
 import com.example.salsamobidemo.entities.FourSquareVenue;
+import com.example.salsamobidemo.entities.SimpleMarker;
+import com.example.salsamobidemo.fragments.CustomMapFragment;
 import com.example.salsamobidemo.fragments.VenueListFragment;
 import com.example.salsamobidemo.helpers.GoogleServicesHelper;
 import com.example.salsamobidemo.helpers.InternetHelper;
@@ -43,8 +45,8 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 
@@ -56,7 +58,7 @@ public class Home extends ActionBarActivity implements OnVenueClickListener, OnV
 	private final String LOG_TAG = "Home Activity";
 	private GoogleServicesHelper googleServicesHelper;
 	private VenueListFragment venueFragment = null;
-	private SupportMapFragment mapFragment;
+	private CustomMapFragment mapFragment;
 	private GoogleMap map = null;
 	private Location lastLocation = null;
 	private LocationManagerHelper locationManagerHelper;
@@ -75,7 +77,7 @@ public class Home extends ActionBarActivity implements OnVenueClickListener, OnV
         setListeners();
         fragmentManager = getSupportFragmentManager();
         venueFragment = (VenueListFragment) fragmentManager.findFragmentById(R.id.venue_list_fragment);
-        mapFragment = (SupportMapFragment) fragmentManager.findFragmentById(R.id.map);
+        mapFragment = (CustomMapFragment) fragmentManager.findFragmentById(R.id.map);
         ///* ViewPager Handling
         viewPager = (ViewPager) findViewById(R.id.pager);
         actionBar = getSupportActionBar();
@@ -91,7 +93,7 @@ public class Home extends ActionBarActivity implements OnVenueClickListener, OnV
             setPageChangeListener();
             //TODO Cambiar estos dos por nuevo metodo que usa el helper
             venueFragment = (VenueListFragment) fragmentManager.findFragmentByTag(getFragmentTag(viewPager.getId(), TabsAdapter.VENUE_LIST_FRAGMENT_ID ));
-            mapFragment = (SupportMapFragment) fragmentManager.findFragmentByTag(getFragmentTag(viewPager.getId(), TabsAdapter.MAP_FRAGMENT_ID ));
+            mapFragment = (CustomMapFragment) fragmentManager.findFragmentByTag(getFragmentTag(viewPager.getId(), TabsAdapter.MAP_FRAGMENT_ID ));
             
             //Phones will only work in portrait mode
         	//setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -177,7 +179,7 @@ public class Home extends ActionBarActivity implements OnVenueClickListener, OnV
 	public void onVenueClicked(FourSquareVenue venue) {
 		//ViewPager handling
     	if (mapFragment == null && viewPager != null){
-    		mapFragment = (SupportMapFragment) fragmentManager.findFragmentByTag(getFragmentTag(viewPager.getId(), TabsAdapter.MAP_FRAGMENT_ID ));
+    		mapFragment = (CustomMapFragment) fragmentManager.findFragmentByTag(getFragmentTag(viewPager.getId(), TabsAdapter.MAP_FRAGMENT_ID ));
     		map = mapFragment.getMap();
     	}
     	//END viewPager handling
@@ -200,17 +202,22 @@ public class Home extends ActionBarActivity implements OnVenueClickListener, OnV
 	public void addVenuesToMap(ArrayList<FourSquareVenue> venues){
 		//ViewPager handling
     	if (map == null && viewPager != null){
-    		mapFragment = (SupportMapFragment) fragmentManager.findFragmentByTag(getFragmentTag(viewPager.getId(), TabsAdapter.MAP_FRAGMENT_ID ));
+    		mapFragment = (CustomMapFragment) fragmentManager.findFragmentByTag(getFragmentTag(viewPager.getId(), TabsAdapter.MAP_FRAGMENT_ID ));
     		if (mapFragment != null){
     			map = mapFragment.getMap();
     		}
     	}
     	//END viewPager handling
 		if (map != null){
+			//New line for custom map
+			ArrayList<SimpleMarker> markers = new ArrayList<SimpleMarker>();
 			for (FourSquareVenue venue : venues){
-				map.addMarker(new MarkerOptions()
+				//New marker object for custom map
+				Marker marker = map.addMarker(new MarkerOptions()
 						.position(new LatLng(venue.getLatitude(), venue.getLongitude()))
 						.title(venue.getName()));
+				//New line for custom map
+				markers.add(new SimpleMarker(marker.getPosition(), marker.getTitle()));
 			}
 			if (venues.size() > 0){
 				LatLng latLng = new LatLng(venues.get(0).getLatitude(), venues.get(0).getLongitude());
@@ -218,6 +225,7 @@ public class Home extends ActionBarActivity implements OnVenueClickListener, OnV
 				map.animateCamera(CameraUpdateFactory.zoomTo(10));
 				
 			}
+			mapFragment.setMarkerList(markers);
 		}
 		else {
 			Log.e(LOG_TAG, getString(R.string.map_not_available_warning));
@@ -243,7 +251,9 @@ public class Home extends ActionBarActivity implements OnVenueClickListener, OnV
 	@Override
 	public void onMapReady(GoogleMap googleMap) {
 		map = googleMap;
+		//TODO: consider calling fragments method to add stored markers
 	}
+	
 	
 	public void mapUIComponents(){
 		searchText = (EditText) findViewById(R.id.city_input_text);
@@ -382,7 +392,8 @@ public class Home extends ActionBarActivity implements OnVenueClickListener, OnV
 
 	@Override
 	public void onListViewRestored(ArrayList<FourSquareVenue> venues) {
-		addVenuesToMap(venues);
+		//TODO: remove this method if custom map fragment works
+		//addVenuesToMap(venues);
 	}
 	
 }
