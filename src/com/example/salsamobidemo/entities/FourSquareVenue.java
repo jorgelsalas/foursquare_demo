@@ -76,5 +76,9 @@ public class FourSquareVenue {
 	public void setDistanceToLocation(double distanceToLocation) {
 		this.distanceToLocation = distanceToLocation;
 	}
+	
+	public String getLatAndLong(){
+		return getLatitude() + "," + getLongitude();
+	}
 
 }

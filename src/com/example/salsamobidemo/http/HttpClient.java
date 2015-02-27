@@ -11,7 +11,7 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
-import com.example.salsamobidemo.asynctasks.TaskConstants;
+import com.example.salsamobidemo.constants.VenueSearchConstants;
 
 
 
@@ -37,11 +37,11 @@ public class HttpClient {
     	
     	try {
     		String fullUrl = url+"?";
-    		fullUrl += TaskConstants.PARAMETER_CLIENT_ID + "=" + TaskConstants.CLIENT_ID;
-    		fullUrl += "&" + TaskConstants.PARAMETER_CLIENT_SECRET + "=" + TaskConstants.CLIENT_SECRET;
-    		fullUrl += "&" + TaskConstants.PARAMETER_VERSION + "=" + TaskConstants.VERSION_VALUE;
-    		fullUrl += "&" + TaskConstants.PARAMETER_LAT_LONG + "=" + String.valueOf(latitude) + "," + String.valueOf(longitude);
-    		fullUrl += "&" + TaskConstants.PARAMETER_NEARBY + "=" + city;
+    		fullUrl += VenueSearchConstants.PARAMETER_CLIENT_ID + "=" + VenueSearchConstants.CLIENT_ID;
+    		fullUrl += "&" + VenueSearchConstants.PARAMETER_CLIENT_SECRET + "=" + VenueSearchConstants.CLIENT_SECRET;
+    		fullUrl += "&" + VenueSearchConstants.PARAMETER_VERSION + "=" + VenueSearchConstants.VERSION_VALUE;
+    		fullUrl += "&" + VenueSearchConstants.PARAMETER_LAT_LONG + "=" + String.valueOf(latitude) + "," + String.valueOf(longitude);
+    		fullUrl += "&" + VenueSearchConstants.PARAMETER_NEARBY + "=" + city;
     		URLEncoder.encode(fullUrl, CHARSET);
     		Log.i(HttpClient.class.getName(), "URL QUERIED: "+ fullUrl);
     		URL conexion = new URL(fullUrl);

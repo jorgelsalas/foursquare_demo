@@ -36,6 +36,7 @@ import com.example.salsamobidemo.fragments.VenueListFragment;
 import com.example.salsamobidemo.helpers.GoogleServicesHelper;
 import com.example.salsamobidemo.helpers.InternetHelper;
 import com.example.salsamobidemo.helpers.LocationManagerHelper;
+import com.example.salsamobidemo.helpers.RestAdapterHelper;
 import com.example.salsamobidemo.interfaces.OnRestoreStateListener;
 import com.example.salsamobidemo.interfaces.OnVenueClickListener;
 import com.example.salsamobidemo.interfaces.OnVenueDataFetchCompleted;
